@@ -42,6 +42,14 @@ static int sbi_load_hart_mask_unpriv(ulong *pmask, ulong *hmask,
 	return 0;
 }
 
+static int sbi_nksatp(unsigned long long epc, unsigned long long target_satp){
+	int ret = 0;
+	//unsigned long long epc = out_trap->epc;
+	//unsigned long long target_satp = regs->a0;
+	sbi_printf("[SBI] EPC found: %llx, target satp: %llx \n", epc, target_satp);
+	csr_write(CSR_SATP, target_satp );
+	return ret;
+}
 static int sbi_ecall_legacy_handler(unsigned long extid, unsigned long funcid,
 				    const struct sbi_trap_regs *regs,
 				    unsigned long *out_val,
@@ -51,7 +59,7 @@ static int sbi_ecall_legacy_handler(unsigned long extid, unsigned long funcid,
 	struct sbi_tlb_info tlb_info;
 	u32 source_hart = current_hartid();
 	ulong hmask = 0;
-
+	
 	switch (extid) {
 	case SBI_EXT_0_1_SET_TIMER:
 #if __riscv_xlen == 32
@@ -110,6 +118,11 @@ static int sbi_ecall_legacy_handler(unsigned long extid, unsigned long funcid,
 		sbi_system_reset(SBI_SRST_RESET_TYPE_SHUTDOWN,
 				 SBI_SRST_RESET_REASON_NONE);
 		break;
+
+	case SBI_EXT_0_1_NKSATP:
+		sbi_nksatp(regs->mepc, regs->a0);
+		break;
+
 	default:
 		ret = SBI_ENOTSUPP;
 	}
@@ -126,7 +139,7 @@ static int sbi_ecall_legacy_register_extensions(void)
 
 struct sbi_ecall_extension ecall_legacy = {
 	.extid_start		= SBI_EXT_0_1_SET_TIMER,
-	.extid_end		= SBI_EXT_0_1_SHUTDOWN,
+	.extid_end		= SBI_EXT_0_1_NKSATP,
 	.register_extensions	= sbi_ecall_legacy_register_extensions,
 	.handle			= sbi_ecall_legacy_handler,
 };
