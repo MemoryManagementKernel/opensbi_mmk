@@ -6,6 +6,8 @@
 # Authors:
 #   Anup Patel <anup.patel@wdc.com>
 #
+export CROSS_COMPILE = riscv64-unknown-elf-
+export PLATFORM_RISCV_XLEN = 64
 
 # Select Make Options:
 # o  Do not use make's built-in rules
