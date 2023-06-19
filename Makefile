@@ -8,6 +8,7 @@
 #
 export CROSS_COMPILE = riscv64-unknown-elf-
 export PLATFORM_RISCV_XLEN = 64
+export PLATFORM = generic
 
 # Select Make Options:
 # o  Do not use make's built-in rules

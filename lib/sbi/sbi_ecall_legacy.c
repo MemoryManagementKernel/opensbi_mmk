@@ -42,13 +42,40 @@ static int sbi_load_hart_mask_unpriv(ulong *pmask, ulong *hmask,
 	return 0;
 }
 
-static int sbi_nksatp(unsigned long long epc, unsigned long long target_satp){
-	int ret = 0;
-	//unsigned long long epc = out_trap->epc;
-	//unsigned long long target_satp = regs->a0;
-	sbi_printf("[SBI] EPC found: %llx, target satp: %llx \n", epc, target_satp);
-	csr_write(CSR_SATP, target_satp );
-	return ret;
+static unsigned long long table[5] = {0,0,0,0,0};
+static int extend = 0;
+
+static int sbi_nksatp(unsigned long long epc, unsigned long long target_satp, unsigned long long sp){
+	//sbi_printf("[SBI_nk] EPC found: %llx, target satp: %llx \n", epc, target_satp);
+	//unsigned long long old_satp = csr_read(CSR_SATP);
+	if((epc > 0x80200000 && epc < 0x80800000) || epc>0xffffffffffffd000){
+		csr_write(CSR_SATP, target_satp);
+		if(extend > 0){
+			extend = extend-1;
+			sbi_printf("[SBI_nk] current sp: %llx.\n",sp);
+		
+			sbi_printf("[SBI_nk] modify in %llx SATP: %llx.\n",epc, target_satp);
+		}
+		for(int a = 0;a<5;a++){
+			if(table[a]==0){
+				table[a] = target_satp;
+				extend = 10;
+				sbi_printf("[SBI_nk] current sp: %llx.\n",sp);
+		
+				sbi_printf("[SBI_nk] modify in %llx SATP: %llx.\n",epc, target_satp);
+				break;
+			}else if(table[a]==target_satp){
+				break;
+			}
+		}
+		__asm__ __volatile__("sfence.vma");
+		return 0;
+	}else{
+		sbi_printf("[SBI_nk] Permission denied for modifying SATP for %llx.\n", epc);
+	
+		return -1;
+	}
+	
 }
 static int sbi_ecall_legacy_handler(unsigned long extid, unsigned long funcid,
 				    const struct sbi_trap_regs *regs,
@@ -65,7 +92,7 @@ static int sbi_ecall_legacy_handler(unsigned long extid, unsigned long funcid,
 #if __riscv_xlen == 32
 		sbi_timer_event_start((((u64)regs->a1 << 32) | (u64)regs->a0));
 #else
-		sbi_timer_event_start((u64)regs->a0);
+		sbi_timer_event_start((unsigned long long)regs->a0);
 #endif
 		break;
 	case SBI_EXT_0_1_CONSOLE_PUTCHAR:
@@ -120,7 +147,7 @@ static int sbi_ecall_legacy_handler(unsigned long extid, unsigned long funcid,
 		break;
 
 	case SBI_EXT_0_1_NKSATP:
-		sbi_nksatp(regs->mepc, regs->a0);
+		sbi_nksatp(regs->mepc, regs->a0, regs->sp);
 		break;
 
 	default:

@@ -140,7 +140,39 @@ static const illegal_insn_func illegal_insn_table[32] = {
 int sbi_illegal_insn_handler(ulong insn, struct sbi_trap_regs *regs)
 {
 	struct sbi_trap_info uptrap;
+	{
+		insn = sbi_get_insn(regs->mepc, &uptrap);
 
+		ulong epc = regs->mepc;
+		ulong csr = insn >> 20;
+		ulong fn = (insn >> 12) & 0b111;
+		ulong src = (insn >> 15) & 0b11111;
+		ulong dst = (insn >> 7) & 0b11111;
+		ulong opcode = insn & 0b1111111;
+
+		if (csr == 0x180 && opcode == 0x73) {
+			regs->mepc += 4;
+			if (fn != 1){
+				//sbi_printf("[SBI_satp] only csrrw for operating satp are supported!\n");
+				return -1;
+			}
+			if((epc > 0x80200000 && epc < 0x80800000) || epc>0xffffffffffffd000){
+				ulong write_val = ((ulong*)regs)[src];
+				if(dst != 0){
+					((ulong*)regs)[dst] = csr_read(CSR_SATP);
+				}
+				if(src != 0){
+					csr_write(CSR_SATP,write_val);
+				}
+				//sbi_printf("[SBI_satp] satp operate success: %lx\n", csr_read(CSR_SATP));
+				return 0;
+			}else{
+				sbi_printf("[SBI_satp] permission denied for mepc = %lx.\n",epc);
+				return -1;
+			}
+		}
+	}
+	
 	/*
 	 * We only deal with 32-bit (or longer) illegal instructions. If we
 	 * see instruction is zero OR instruction is 16-bit then we fetch and
@@ -155,6 +187,7 @@ int sbi_illegal_insn_handler(ulong insn, struct sbi_trap_regs *regs)
 	sbi_pmu_ctr_incr_fw(SBI_PMU_FW_ILLEGAL_INSN);
 	if (unlikely((insn & 3) != 3)) {
 		insn = sbi_get_insn(regs->mepc, &uptrap);
+
 		if (uptrap.cause) {
 			uptrap.epc = regs->mepc;
 			return sbi_trap_redirect(regs, &uptrap);

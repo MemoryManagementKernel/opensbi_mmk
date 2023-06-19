@@ -12,6 +12,7 @@
 #include <sbi/sbi_ecall_interface.h>
 #include <sbi/sbi_error.h>
 #include <sbi/sbi_trap.h>
+#include <sbi/riscv_asm.h>
 
 extern struct sbi_ecall_extension *sbi_ecall_exts[];
 extern unsigned long sbi_ecall_exts_size;
@@ -110,7 +111,7 @@ int sbi_ecall_handler(struct sbi_trap_regs *regs)
 		ret = ext->handle(extension_id, func_id,
 				  regs, &out_val, &trap);
 		if (extension_id >= SBI_EXT_0_1_SET_TIMER &&
-		    extension_id <= SBI_EXT_0_1_SHUTDOWN)
+		    extension_id <= SBI_EXT_0_1_NKSATP)
 			is_0_1_spec = 1;
 	} else {
 		ret = SBI_ENOTSUPP;
@@ -161,6 +162,11 @@ int sbi_ecall_init(void)
 		if (ret)
 			return ret;
 	}
+
+	//Yan_ice: use TVM bit to disable SATP for S mode.
+	unsigned long long mstatus = csr_read(CSR_MSTATUS);
+	mstatus |= MSTATUS_TVM;
+	csr_write(CSR_MSTATUS, mstatus);
 
 	return 0;
 }
