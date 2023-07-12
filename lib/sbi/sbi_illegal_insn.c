@@ -145,16 +145,16 @@ int sbi_illegal_insn_handler(ulong insn, struct sbi_trap_regs *regs)
 
 		ulong epc = regs->mepc;
 		ulong csr = insn >> 20;
-		ulong fn = (insn >> 12) & 0b111;
+		ulong fn = (insn >> 12) & 0x7;
 		ulong src = (insn >> 15) & 0b11111;
 		ulong dst = (insn >> 7) & 0b11111;
 		ulong opcode = insn & 0b1111111;
 
 		if (csr == 0x180 && opcode == 0x73) {
 			regs->mepc += 4;
-			if (fn != 1){
-				//sbi_printf("[SBI_satp] only csrrw for operating satp are supported!\n");
-				return -1;
+			if (fn != 1 || fn != 5){
+				//sbi_printf("[SBI_satp] only csrrw are supported! current: %ld\n",fn);
+				//return 0;
 			}
 			if((epc > 0x80200000 && epc < 0x80800000) || epc>0xffffffffffffd000){
 				ulong write_val = ((ulong*)regs)[src];
@@ -168,7 +168,7 @@ int sbi_illegal_insn_handler(ulong insn, struct sbi_trap_regs *regs)
 				return 0;
 			}else{
 				sbi_printf("[SBI_satp] permission denied for mepc = %lx.\n",epc);
-				return -1;
+				return 0;
 			}
 		}
 	}

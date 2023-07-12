@@ -8,7 +8,12 @@
 #
 export CROSS_COMPILE = riscv64-unknown-elf-
 export PLATFORM_RISCV_XLEN = 64
+export OPENSBI_CC_XLEN = 64
 export PLATFORM = generic
+
+export FW_JUMP=y
+export FW_JUMP_ADDR=$(MMK_ENTRY_PA)
+
 
 # Select Make Options:
 # o  Do not use make's built-in rules
