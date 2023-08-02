@@ -134,6 +134,8 @@ static void __noreturn sbi_trap_error(const char *msg, int rc,
 int sbi_trap_redirect(struct sbi_trap_regs *regs,
 		      struct sbi_trap_info *trap)
 {
+	sbi_trap_info(regs,trap);
+
 	ulong hstatus, vsstatus, prev_mode;
 #if __riscv_xlen == 32
 	bool prev_virt = (regs->mstatusH & MSTATUSH_MPV) ? true : false;
@@ -186,6 +188,7 @@ int sbi_trap_redirect(struct sbi_trap_regs *regs,
 
 	/* Update exception related CSRs */
 	if (next_virt) {
+		sbi_printf("redirect HS mode\n");
 		/* Update VS-mode exception info */
 		csr_write(CSR_VSTVAL, trap->tval);
 		csr_write(CSR_VSEPC, trap->epc);
@@ -217,6 +220,7 @@ int sbi_trap_redirect(struct sbi_trap_regs *regs,
 		/* Update VS-mode SSTATUS CSR */
 		csr_write(CSR_VSSTATUS, vsstatus);
 	} else {
+		sbi_printf("redirect S mode\n");
 		/* Update S-mode exception info */
 		csr_write(CSR_STVAL, trap->tval);
 		csr_write(CSR_SEPC, trap->epc);
@@ -247,6 +251,7 @@ int sbi_trap_redirect(struct sbi_trap_regs *regs,
 
 static int sbi_trap_nonaia_irq(struct sbi_trap_regs *regs, ulong mcause)
 {
+	sbi_printf("nonaia_irq\n");
 	mcause &= ~(1UL << (__riscv_xlen - 1));
 	switch (mcause) {
 	case IRQ_M_TIMER:
@@ -266,6 +271,7 @@ static int sbi_trap_nonaia_irq(struct sbi_trap_regs *regs, ulong mcause)
 
 static int sbi_trap_aia_irq(struct sbi_trap_regs *regs, ulong mcause)
 {
+	sbi_printf("aia_irq\n");
 	int rc;
 	unsigned long mtopi;
 
@@ -337,8 +343,8 @@ struct sbi_trap_regs *sbi_trap_handler(struct sbi_trap_regs *regs)
 
 	switch (mcause) {
 	case CAUSE_ILLEGAL_INSTRUCTION:
-		sbi_printf("ill inst handled\n");
-		sbi_trap_info(regs,&trap);
+		sbi_printf("illegal inst handled\n");
+		
 		rc  = sbi_illegal_insn_handler(mtval, regs);
 		msg = "illegal instruction handler failed";
 		break;
