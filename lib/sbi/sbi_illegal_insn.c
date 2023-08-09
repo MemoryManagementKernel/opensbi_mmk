@@ -31,7 +31,7 @@ static int truly_illegal_insn(ulong insn, struct sbi_trap_regs *regs)
 	trap.tval2 = 0;
 	trap.tinst = 0;
 	trap.gva   = 0;
-
+	sbi_printf("fault instruction: %lx\n",insn);
 	return sbi_trap_redirect(regs, &trap);
 }
 
@@ -164,7 +164,7 @@ int sbi_illegal_insn_handler(ulong insn, struct sbi_trap_regs *regs)
 				if(src != 0){
 					csr_write(CSR_SATP,write_val);
 				}
-				sbi_printf("[SBI_satp] satp operate success: %lx\n", csr_read(CSR_SATP));
+				//sbi_printf("[SBI_satp] satp operate success: %lx\n", csr_read(CSR_SATP));
 				return 0;
 			}else{
 				sbi_printf("[SBI_satp] permission denied for mepc = %lx.\n",epc);

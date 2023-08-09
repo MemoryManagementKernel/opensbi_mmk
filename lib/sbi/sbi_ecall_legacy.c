@@ -24,6 +24,53 @@
 #include <sbi/sbi_unpriv.h>
 #include <sbi/sbi_hart.h>
 
+
+static void sbi_trap_info(const struct sbi_trap_regs *regs, 
+const struct sbi_trap_info *trap)
+{
+	u32 hartid = current_hartid();
+
+	sbi_printf("%s: [INFO] hart%d: reg info\n", __func__, hartid);
+	sbi_printf("%s: hart%d: mcause=0x%" PRILX " mtval=0x%" PRILX "\n",
+		   __func__, hartid, trap->cause, trap->tval);
+
+	sbi_printf("%s: hart%d: mepc=0x%" PRILX " mstatus=0x%" PRILX "\n",
+		   __func__, hartid, regs->mepc, regs->mstatus);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "ra", regs->ra, "sp", regs->sp);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "gp", regs->gp, "tp", regs->tp);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "s0", regs->s0, "s1", regs->s1);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "a0", regs->a0, "a1", regs->a1);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "a2", regs->a2, "a3", regs->a3);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "a4", regs->a4, "a5", regs->a5);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "a6", regs->a6, "a7", regs->a7);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "s2", regs->s2, "s3", regs->s3);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "s4", regs->s4, "s5", regs->s5);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "s6", regs->s6, "s7", regs->s7);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "s8", regs->s8, "s9", regs->s9);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "s10", regs->s10, "s11", regs->s11);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "t0", regs->t0, "t1", regs->t1);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "t2", regs->t2, "t3", regs->t3);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "t4", regs->t4, "t5", regs->t5);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX "\n", __func__, hartid, "t6",
+		   regs->t6);
+
+}
+
 static int sbi_load_hart_mask_unpriv(ulong *pmask, ulong *hmask,
 				     struct sbi_trap_info *uptrap)
 {
@@ -42,41 +89,41 @@ static int sbi_load_hart_mask_unpriv(ulong *pmask, ulong *hmask,
 	return 0;
 }
 
-static unsigned long long table[5] = {0,0,0,0,0};
-static int extend = 0;
+//static unsigned long long table[5] = {0,0,0,0,0};
+//static int extend = 0;
 
-static int sbi_nksatp(unsigned long long epc, unsigned long long target_satp, unsigned long long sp){
-	//sbi_printf("[SBI_nk] EPC found: %llx, target satp: %llx \n", epc, target_satp);
-	//unsigned long long old_satp = csr_read(CSR_SATP);
-	if((epc > 0x80200000 && epc < 0x80800000) || epc>0xffffffffffffd000){
-		csr_write(CSR_SATP, target_satp);
-		if(extend > 0){
-			extend = extend-1;
-			sbi_printf("[SBI_nk] current sp: %llx.\n",sp);
+// static int sbi_nksatp(unsigned long long epc, unsigned long long target_satp, unsigned long long sp){
+// 	//sbi_printf("[SBI_nk] EPC found: %llx, target satp: %llx \n", epc, target_satp);
+// 	//unsigned long long old_satp = csr_read(CSR_SATP);
+// 	if((epc > 0x80200000 && epc < 0x80800000) || epc>0xffffffffffffd000){
+// 		csr_write(CSR_SATP, target_satp);
+// 		if(extend > 0){
+// 			extend = extend-1;
+// 			sbi_printf("[SBI_nk] current sp: %llx.\n",sp);
 		
-			sbi_printf("[SBI_nk] modify in %llx SATP: %llx.\n",epc, target_satp);
-		}
-		for(int a = 0;a<5;a++){
-			if(table[a]==0){
-				table[a] = target_satp;
-				extend = 10;
-				sbi_printf("[SBI_nk] current sp: %llx.\n",sp);
+// 			sbi_printf("[SBI_nk] modify in %llx SATP: %llx.\n",epc, target_satp);
+// 		}
+// 		for(int a = 0;a<5;a++){
+// 			if(table[a]==0){
+// 				table[a] = target_satp;
+// 				extend = 10;
+// 				sbi_printf("[SBI_nk] current sp: %llx.\n",sp);
 		
-				sbi_printf("[SBI_nk] modify in %llx SATP: %llx.\n",epc, target_satp);
-				break;
-			}else if(table[a]==target_satp){
-				break;
-			}
-		}
-		__asm__ __volatile__("sfence.vma");
-		return 0;
-	}else{
-		sbi_printf("[SBI_nk] Permission denied for modifying SATP for %llx.\n", epc);
+// 				sbi_printf("[SBI_nk] modify in %llx SATP: %llx.\n",epc, target_satp);
+// 				break;
+// 			}else if(table[a]==target_satp){
+// 				break;
+// 			}
+// 		}
+// 		__asm__ __volatile__("sfence.vma");
+// 		return 0;
+// 	}else{
+// 		sbi_printf("[SBI_nk] Permission denied for modifying SATP for %llx.\n", epc);
 	
-		return -1;
-	}
+// 		return -1;
+// 	}
 	
-}
+// }
 static int sbi_ecall_legacy_handler(unsigned long extid, unsigned long funcid,
 				    const struct sbi_trap_regs *regs,
 				    unsigned long *out_val,
@@ -147,7 +194,8 @@ static int sbi_ecall_legacy_handler(unsigned long extid, unsigned long funcid,
 		break;
 
 	case SBI_EXT_0_1_NKSATP:
-		sbi_nksatp(regs->mepc, regs->a0, regs->sp);
+		sbi_trap_info(regs,out_trap);
+		//sbi_nksatp(regs->mepc, regs->a0, regs->sp);
 		break;
 
 	default:
