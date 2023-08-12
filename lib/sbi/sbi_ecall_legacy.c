@@ -30,7 +30,7 @@ const struct sbi_trap_info *trap)
 {
 	u32 hartid = current_hartid();
 
-	sbi_printf("%s: [INFO] hart%d: reg info\n", __func__, hartid);
+	sbi_printf("%s: [ECALL INFO] hart%d: reg info\n", __func__, hartid);
 	sbi_printf("%s: hart%d: mcause=0x%" PRILX " mtval=0x%" PRILX "\n",
 		   __func__, hartid, trap->cause, trap->tval);
 

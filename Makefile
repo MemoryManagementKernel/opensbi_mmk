@@ -11,9 +11,11 @@ export PLATFORM_RISCV_XLEN = 64
 export OPENSBI_CC_XLEN = 64
 export PLATFORM = generic
 
+export FW_FDT_PATH=d1s.dtb
 export FW_JUMP=y
 export FW_JUMP_ADDR=$(MMK_ENTRY_PA)
-
+export FW_TEXT_START=$(FIRMWARE_ENTRY_PA)
+# export PLATFORM_RISCV_ISA=rv64gcxthead 
 
 # Select Make Options:
 # o  Do not use make's built-in rules
