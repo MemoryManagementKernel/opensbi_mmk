@@ -9,17 +9,23 @@
 export CROSS_COMPILE = riscv64-unknown-elf-
 export PLATFORM_RISCV_XLEN = 64
 export OPENSBI_CC_XLEN = 64
-export PLATFORM = generic
 
 ifeq ($(BOARD), nezha)
-	export FW_FDT_PATH=d1s.dtb
+	export PLATFORM = generic
+	export PLATFORM_RISCV_ISA=rv64imacxtheadc
+	export FW_FDT_PATH = d1s.dtb
+else ifeq($(BOARD), k210)
+	export PLATFORM_RISCV_ISA=rv64imac
+	export PLATFORM = kendryte/k210
+else ifeq($(BOARD), qemu)
+	export PLATFORM_RISCV_ISA=rv64gc
+	export PLATFORM = generic
 endif
 
 export FW_JUMP=y
 export FW_JUMP_ADDR=$(MMK_ENTRY_PA)
 export FW_TEXT_START=$(FIRMWARE_ENTRY_PA)
 
-export PLATFORM_RISCV_ISA=rv64gc
 
 # Select Make Options:
 # o  Do not use make's built-in rules
@@ -683,6 +689,9 @@ clean:
 	$(CMD_PREFIX)find $(build_dir) -type f -name "*.bin" -exec rm -rf {} +
 	$(if $(V), @echo " RM        $(build_dir)/*.dtb")
 	$(CMD_PREFIX)find $(build_dir) -type f -name "*.dtb" -exec rm -rf {} +
+	# Yan_ice: Please clean *.ld, I beg you :(
+	$(if $(V), @echo " RM        $(build_dir)/*.ld")
+	$(CMD_PREFIX)find $(build_dir) -type f -name "*.ld" -exec rm -rf {} +
 
 # Rule for "make distclean"
 .PHONY: distclean

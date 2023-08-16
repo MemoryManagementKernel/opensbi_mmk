@@ -78,6 +78,7 @@ static void sbi_boot_print_general(struct sbi_scratch *scratch)
 	if (scratch->options & SBI_SCRATCH_NO_BOOT_PRINTS)
 		return;
 
+	sbi_printf("Addr test                 : %lx\n", (unsigned long)sbi_boot_print_banner);
 	/* Platform details */
 	sbi_printf("Platform Name             : %s\n",
 		   sbi_platform_name(plat));

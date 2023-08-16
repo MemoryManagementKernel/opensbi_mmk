@@ -5,14 +5,17 @@ mainmenu "OpenSBI $(OPENSBI_PLATFORM) Configuration"
 config OPENSBI_SRC_DIR
 	string
 	option env="OPENSBI_SRC_DIR"
+	default "."
 
 config OPENSBI_PLATFORM
 	string
 	option env="OPENSBI_PLATFORM"
+	default "generic"
 
 config OPENSBI_PLATFORM_SRC_DIR
 	string
 	option env="OPENSBI_PLATFORM_SRC_DIR"
+	default "platform/generic"
 
 menu "Platform Options"
 source "$(OPENSBI_PLATFORM_SRC_DIR)/Kconfig"
