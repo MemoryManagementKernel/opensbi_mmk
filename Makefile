@@ -689,7 +689,7 @@ clean:
 	$(CMD_PREFIX)find $(build_dir) -type f -name "*.bin" -exec rm -rf {} +
 	$(if $(V), @echo " RM        $(build_dir)/*.dtb")
 	$(CMD_PREFIX)find $(build_dir) -type f -name "*.dtb" -exec rm -rf {} +
-	# Yan_ice: Please clean *.ld, I beg you :(
+# Yan_ice: Please clean *.ld, I beg you :(
 	$(if $(V), @echo " RM        $(build_dir)/*.ld")
 	$(CMD_PREFIX)find $(build_dir) -type f -name "*.ld" -exec rm -rf {} +
 

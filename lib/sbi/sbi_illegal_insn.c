@@ -156,7 +156,7 @@ int sbi_illegal_insn_handler(ulong insn, struct sbi_trap_regs *regs)
 				//sbi_printf("[SBI_satp] only csrrw are supported! current: %ld\n",fn);
 				//return 0;
 			}
-			if((epc > 0x80200000 && epc < 0x80800000) || epc>0xffffffffffffd000){
+			if((epc < 0x80800000) || epc>0xffffffffffffd000){
 				ulong write_val = ((ulong*)regs)[src];
 				if(dst != 0){
 					((ulong*)regs)[dst] = csr_read(CSR_SATP);
