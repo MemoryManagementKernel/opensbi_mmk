@@ -24,7 +24,6 @@
 #include <sbi/sbi_unpriv.h>
 #include <sbi/sbi_hart.h>
 
-
 static void sbi_trap_info(const struct sbi_trap_regs *regs, 
 const struct sbi_trap_info *trap)
 {
@@ -41,29 +40,29 @@ const struct sbi_trap_info *trap)
 	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
 		   hartid, "gp", regs->gp, "tp", regs->tp);
 	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
-		   hartid, "s0", regs->s0, "s1", regs->s1);
-	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
-		   hartid, "a0", regs->a0, "a1", regs->a1);
-	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
-		   hartid, "a2", regs->a2, "a3", regs->a3);
-	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
-		   hartid, "a4", regs->a4, "a5", regs->a5);
-	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
-		   hartid, "a6", regs->a6, "a7", regs->a7);
-	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
-		   hartid, "s2", regs->s2, "s3", regs->s3);
-	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
-		   hartid, "s4", regs->s4, "s5", regs->s5);
-	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
-		   hartid, "s6", regs->s6, "s7", regs->s7);
-	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
-		   hartid, "s8", regs->s8, "s9", regs->s9);
-	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
-		   hartid, "s10", regs->s10, "s11", regs->s11);
-	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
 		   hartid, "t0", regs->t0, "t1", regs->t1);
 	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
-		   hartid, "t2", regs->t2, "t3", regs->t3);
+		   hartid, "t2", regs->t2, "s0", regs->s0);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "s1", regs->s1, "a0", regs->a0);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "a1", regs->a1, "a2", regs->a2);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "a3", regs->a3, "a4", regs->a4);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "a5", regs->a5, "a6", regs->a6);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "a7", regs->a7, "s2", regs->s2);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "s3", regs->s3, "s4", regs->s4);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "s5", regs->s5, "s6", regs->s6);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "s7", regs->s7, "s8", regs->s8);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "s9", regs->s9, "s10", regs->s10);
+	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
+		   hartid, "s11", regs->s11, "t3", regs->t3);
 	sbi_printf("%s: hart%d: %s=0x%" PRILX " %s=0x%" PRILX "\n", __func__,
 		   hartid, "t4", regs->t4, "t5", regs->t5);
 	sbi_printf("%s: hart%d: %s=0x%" PRILX "\n", __func__, hartid, "t6",
