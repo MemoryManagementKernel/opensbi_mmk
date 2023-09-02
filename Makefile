@@ -14,10 +14,12 @@ ifeq ($(BOARD), nezha)
 	export PLATFORM = generic
 	export PLATFORM_RISCV_ISA=rv64imacxtheadc
 	export FW_FDT_PATH = d1s.dtb
-else ifeq($(BOARD), k210)
+endif
+ifeq ($(BOARD), k210)
 	export PLATFORM_RISCV_ISA=rv64imac
 	export PLATFORM = kendryte/k210
-else ifeq($(BOARD), qemu)
+endif
+ifeq ($(BOARD), qemu)
 	export PLATFORM_RISCV_ISA=rv64gc
 	export PLATFORM = generic
 endif
