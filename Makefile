@@ -9,6 +9,7 @@
 export CROSS_COMPILE = riscv64-unknown-elf-
 export PLATFORM_RISCV_XLEN = 64
 export OPENSBI_CC_XLEN = 64
+BOARD ?= nezha
 
 ifeq ($(BOARD), nezha)
 	export PLATFORM = generic
@@ -23,6 +24,9 @@ ifeq ($(BOARD), qemu)
 	export PLATFORM_RISCV_ISA=rv64gc
 	export PLATFORM = generic
 endif
+
+MMK_ENTRY_PA ?= 0x40200000
+FIRMWARE_ENTRY_PA ?= 0x40000000
 
 export FW_JUMP=y
 export FW_JUMP_ADDR=$(MMK_ENTRY_PA)

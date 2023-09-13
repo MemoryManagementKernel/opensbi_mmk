@@ -163,7 +163,7 @@ int sbi_illegal_insn_handler(ulong insn, struct sbi_trap_regs *regs)
 				}
 				if(src != 0){
 					csr_write(CSR_SATP,write_val);
-					asm("sfence.vma");
+					//asm("sfence.vma");
 				}
 				//sbi_printf("[SBI_satp] satp operate success: %lx\n", csr_read(CSR_SATP));
 				return 0;

@@ -164,9 +164,9 @@ int sbi_ecall_init(void)
 	}
 
 	//Yan_ice: use TVM bit to disable SATP for S mode.
-	unsigned long long mstatus = csr_read(CSR_MSTATUS);
-	mstatus |= MSTATUS_TVM;
-	csr_write(CSR_MSTATUS, mstatus);
+	//unsigned long long mstatus = csr_read(CSR_MSTATUS);
+	//mstatus |= MSTATUS_TVM;
+	//csr_write(CSR_MSTATUS, mstatus);
 	//temporarily not modify mstatus, for debug.
 
 	return 0;
