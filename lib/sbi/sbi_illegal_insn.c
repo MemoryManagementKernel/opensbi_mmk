@@ -147,9 +147,12 @@ int sbi_illegal_insn_handler(ulong insn, struct sbi_trap_regs *regs)
 		ulong csr = insn >> 20;
 		ulong fn = (insn >> 12) & 0x7;
 		ulong src = (insn >> 15) & 0b11111;
+		ulong src2 = (insn >> 20) & 0b11111;
 		ulong dst = (insn >> 7) & 0b11111;
 		ulong opcode = insn & 0b1111111;
+		ulong fncode = insn >> 25;
 
+		//the inst below is handling csrw satp.
 		if (csr == 0x180 && opcode == 0x73) {
 			regs->mepc += 4;
 			if (fn != 1 || fn != 5){
@@ -163,7 +166,7 @@ int sbi_illegal_insn_handler(ulong insn, struct sbi_trap_regs *regs)
 				}
 				if(src != 0){
 					csr_write(CSR_SATP,write_val);
-					//asm("sfence.vma");
+					asm("sfence.vma");
 				}
 				//sbi_printf("[SBI_satp] satp operate success: %lx\n", csr_read(CSR_SATP));
 				return 0;
@@ -171,6 +174,16 @@ int sbi_illegal_insn_handler(ulong insn, struct sbi_trap_regs *regs)
 				sbi_printf("[SBI_satp] permission denied for mepc = %lx.\n",epc);
 				return 0;
 			}
+		}
+
+		//the inst below is handling sfence.vma.
+		if(opcode == 0x73 && fncode == 0x09){
+			regs->mepc += 4;
+			ulong vaddr = ((ulong*)regs)[src];
+			ulong asid = ((ulong*)regs)[src2];
+			asm("sfence.vma %0, %1" :: "r"(vaddr), "r"(asid));
+			sbi_printf("sfence.vma: %lx %lx \n", vaddr, asid);
+			return 0;
 		}
 	}
 	sbi_printf("M mode illgal inst handled");
